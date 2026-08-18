@@ -1,102 +1,46 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <stddef.h>
 
-static void swap(int *a, int *b)
+static void change_value(int *number)
 {
-    int temp = *a;
-    *a = *b;
-    *b = temp;
+    *number = *number + 10;
 }
 
-static void reverse_array(int *arr, size_t count)
+static void swap(int *first, int *second)
 {
-    if (arr == NULL || count < 2)
-        return;
-
-    int *left = arr;
-    int *right = arr + count - 1;
-
-    while (left < right) {
-        swap(left, right);
-        ++left;
-        --right;
-    }
+    int temp = *first;
+    *first = *second;
+    *second = temp;
 }
 
-static int find_max(const int *arr, size_t count)
+static void print_array(const int *array, int size)
 {
-    if (arr == NULL || count == 0)
-        return 0;
-
-    int max = arr[0];
-
-    for (size_t i = 1; i < count; ++i) {
-        if (arr[i] > max)
-            max = arr[i];
-    }
-
-    return max;
-}
-
-static int **allocate_matrix(size_t rows, size_t cols)
-{
-    int **matrix = calloc(rows, sizeof(*matrix));
-    if (matrix == NULL)
-        return NULL;
-
-    for (size_t i = 0; i < rows; ++i) {
-        matrix[i] = calloc(cols, sizeof(*matrix[i]));
-        if (matrix[i] == NULL) {
-            while (i > 0)
-                free(matrix[--i]);
-            free(matrix);
-            return NULL;
-        }
-    }
-
-    return matrix;
-}
-
-static void free_matrix(int **matrix, size_t rows)
-{
-    if (matrix == NULL)
-        return;
-
-    for (size_t i = 0; i < rows; ++i)
-        free(matrix[i]);
-
-    free(matrix);
+    for (int i = 0; i < size; ++i)
+        printf("%d ", array[i]);
+    printf("\n");
 }
 
 int main(void)
 {
-    int values[] = {10, 4, 25, 7, 18};
-    const size_t count = sizeof(values) / sizeof(values[0]);
+    int number = 20;
+    int first = 10;
+    int second = 30;
+    int values[] = {5, 10, 15, 20};
 
-    printf("Original max: %d\n", find_max(values, count));
+    printf("Before pointer change: %d\n", number);
+    change_value(&number);
+    printf("After pointer change:  %d\n", number);
 
-    reverse_array(values, count);
+    printf("Before swap: first=%d second=%d\n", first, second);
+    swap(&first, &second);
+    printf("After swap:  first=%d second=%d\n", first, second);
 
-    printf("Reversed: ");
-    for (size_t i = 0; i < count; ++i)
-        printf("%d%s", values[i], i + 1 == count ? "\n" : " ");
+    printf("Array using pointer access: ");
+    for (int i = 0; i < 4; ++i)
+        printf("%d ", *(values + i));
+    printf("\n");
 
-    int **matrix = allocate_matrix(2, 3);
-    if (matrix == NULL) {
-        fprintf(stderr, "matrix allocation failed\n");
-        return EXIT_FAILURE;
-    }
+    printf("Array using function: ");
+    print_array(values, 4);
 
-    matrix[0][0] = 10;
-    matrix[0][1] = 20;
-    matrix[0][2] = 30;
-    matrix[1][0] = 40;
-    matrix[1][1] = 50;
-    matrix[1][2] = 60;
-
-    printf("Matrix[1][2] = %d\n", *(*(matrix + 1) + 2));
-
-    free_matrix(matrix, 2);
-    return EXIT_SUCCESS;
+    return 0;
 }
